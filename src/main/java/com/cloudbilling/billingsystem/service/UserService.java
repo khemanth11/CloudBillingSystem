@@ -18,9 +18,14 @@ public class UserService {
 
     // Save User with encrypted password
     public User saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    // set default role if none is provided
+    if (user.getRole() == null || user.getRole().isBlank()) {
+        user.setRole("ROLE_USER");
     }
+
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
+    return userRepository.save(user);
+}
 
     // Return UserDTO without password
     public UserDTO getUserById(Long id) {
