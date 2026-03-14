@@ -23,10 +23,11 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
     http
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/**").permitAll()   // login, register public
-            .requestMatchers("/users/**").authenticated() // requires JWT
-            .anyRequest().permitAll()                  // others still open for now
-        )
+    .requestMatchers("/auth/**").permitAll()
+    .requestMatchers("/users/all").hasRole("ADMIN")   // ADMIN only
+    .requestMatchers("/users/**").authenticated()     // others: any logged-in user
+    .anyRequest().permitAll()
+)
         .httpBasic(httpBasic -> httpBasic.disable())
         .formLogin(form -> form.disable())
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

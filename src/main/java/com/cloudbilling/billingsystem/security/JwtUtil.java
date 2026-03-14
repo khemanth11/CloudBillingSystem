@@ -13,13 +13,18 @@ public class JwtUtil {
     // Strong enough key for HS256
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    public static String generateToken(String email) {
+    public static String generateToken(String email, String role) {
         return Jwts.builder()
-                .setSubject(email)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
-                .signWith(SECRET_KEY) // key already knows HS256
-                .compact();
+            .setSubject(email)
+            .claim("role", role)
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+            .signWith(SECRET_KEY)
+            .compact();
+    }
+
+    public static String extractRole(String token) {
+        return (String) getClaims(token).get("role");
     }
 
     public static String extractEmail(String token) {

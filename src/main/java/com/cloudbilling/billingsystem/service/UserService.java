@@ -5,6 +5,7 @@ import com.cloudbilling.billingsystem.model.User;
 import com.cloudbilling.billingsystem.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -15,6 +16,11 @@ public class UserService {
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
+
+public List<User> getAllUsers() {
+    return userRepository.findAll();
+}
 
     // Save User with encrypted password
     public User saveUser(User user) {

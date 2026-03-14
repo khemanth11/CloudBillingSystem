@@ -37,7 +37,7 @@ public class AuthController {
         if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
     throw new InvalidCredentialsException();
 }
-        String token = JwtUtil.generateToken(user.getEmail());
+        String token = JwtUtil.generateToken(user.getEmail(), user.getRole());
         return new AuthResponse(token);
     }
 }

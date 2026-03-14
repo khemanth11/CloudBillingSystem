@@ -1,5 +1,8 @@
 package com.cloudbilling.billingsystem.security;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import java.util.List;
 import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,15 +32,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             try {
                 String email = JwtUtil.extractEmail(token);
+String role = JwtUtil.extractRole(token);
 
-                if (email != null && !JwtUtil.isTokenExpired(token)
-                        && SecurityContextHolder.getContext().getAuthentication() == null) {
+if (email != null && role != null && !JwtUtil.isTokenExpired(token)
+        && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                    UserDetails principal = User
-        .withUsername(email)
-        .password("")
-        .authorities("USER")
-        .build();
+    List<GrantedAuthority> authorities =
+            List.of(new SimpleGrantedAuthority(role));
+
+    UserDetails principal = User
+            .withUsername(email)
+            .password("")
+            .authorities(authorities)
+            .build(); 
 
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
