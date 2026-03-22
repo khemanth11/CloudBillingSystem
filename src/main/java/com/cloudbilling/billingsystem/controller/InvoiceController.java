@@ -20,19 +20,37 @@ public class InvoiceController {
 
     // ADMIN: create invoice for a user
     @PostMapping("/user/{userId}")
-public InvoiceDTO createInvoiceForUser(@PathVariable Long userId,
-                                       @RequestBody Invoice invoice) {
-    return invoiceService.createInvoice(userId, invoice);
-}
+    public InvoiceDTO createInvoiceForUser(@PathVariable Long userId,
+            @RequestBody Invoice invoice) {
+        return invoiceService.createInvoice(userId, invoice);
+    }
 
-@GetMapping("/me")
-public List<InvoiceDTO> getMyInvoices(Authentication authentication) {
-    String email = authentication.getName();
-    return invoiceService.getInvoicesForUser(email);
-}
+    @GetMapping("/me")
+    public List<InvoiceDTO> getMyInvoices(Authentication authentication) {
+        String email = authentication.getName();
+        return invoiceService.getInvoicesForUser(email);
+    }
 
-@GetMapping("/all")
-public List<InvoiceDTO> getAllInvoices() {
-    return invoiceService.getAllInvoices();
-}
+    @GetMapping("/all")
+    public List<InvoiceDTO> getAllInvoices() {
+        return invoiceService.getAllInvoices();
+    }
+
+    public static class UpdateStatusRequest {
+        private String status;
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+    }
+
+    @PatchMapping("/{id}/status")
+    public InvoiceDTO updateStatus(@PathVariable Long id,
+            @RequestBody UpdateStatusRequest body) {
+        return invoiceService.updateStatus(id, body.getStatus());
+    }
 }

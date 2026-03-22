@@ -22,37 +22,53 @@ public class InvoiceService {
     }
 
     public InvoiceDTO createInvoice(Long userId, Invoice invoice) {
-    User user = userRepository.findById(userId).orElseThrow();
-    invoice.setUser(user);
-    Invoice saved = invoiceRepository.save(invoice);
-    return toDto(saved);
-}
+        User user = userRepository.findById(userId).orElseThrow();
+        invoice.setUser(user);
+        Invoice saved = invoiceRepository.save(invoice);
+        return toDto(saved);
+    }
 
-public List<InvoiceDTO> getInvoicesForUser(String email) {
-    return invoiceRepository.findByUserEmail(email)
-            .stream()
-            .map(this::toDto)
-            .collect(Collectors.toList());
-}
+    public InvoiceDTO updateStatus(Long invoiceId, String newStatus) {
+        Invoice invoice = invoiceRepository.findById(invoiceId)
+                .orElseThrow(); // later we can replace with custom NotFoundException
 
-public List<InvoiceDTO> getAllInvoices() {
-    return invoiceRepository.findAll()
-            .stream()
-            .map(this::toDto)
-            .collect(Collectors.toList());
-}
+        // Optional: basic validation of allowed statuses
+        if (!"PENDING".equalsIgnoreCase(newStatus)
+                && !"PAID".equalsIgnoreCase(newStatus)
+                && !"OVERDUE".equalsIgnoreCase(newStatus)) {
+            throw new IllegalArgumentException("Invalid status: " + newStatus);
+        }
+
+        invoice.setStatus(newStatus.toUpperCase());
+        Invoice saved = invoiceRepository.save(invoice);
+        return toDto(saved);
+    }
+
+    public List<InvoiceDTO> getInvoicesForUser(String email) {
+        return invoiceRepository.findByUserEmail(email)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<InvoiceDTO> getAllInvoices() {
+        return invoiceRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
 
     private InvoiceDTO toDto(Invoice invoice) {
-    InvoiceDTO dto = new InvoiceDTO();
-    dto.setId(invoice.getId());
-    dto.setUserId(invoice.getUser().getId());
-    dto.setUserEmail(invoice.getUser().getEmail());
-    dto.setAmount(invoice.getAmount());
-    dto.setCurrency(invoice.getCurrency());
-    dto.setDescription(invoice.getDescription());
-    dto.setStatus(invoice.getStatus());
-    dto.setDueDate(invoice.getDueDate());
-    dto.setCreatedAt(invoice.getCreatedAt());
-    return dto;
-}
+        InvoiceDTO dto = new InvoiceDTO();
+        dto.setId(invoice.getId());
+        dto.setUserId(invoice.getUser().getId());
+        dto.setUserEmail(invoice.getUser().getEmail());
+        dto.setAmount(invoice.getAmount());
+        dto.setCurrency(invoice.getCurrency());
+        dto.setDescription(invoice.getDescription());
+        dto.setStatus(invoice.getStatus());
+        dto.setDueDate(invoice.getDueDate());
+        dto.setCreatedAt(invoice.getCreatedAt());
+        return dto;
+    }
 }
